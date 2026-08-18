@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('cep', 9);
             $table->string('logradouro');
-            $table->string('numero', 20)->nullable();
+            $table->string('numero', 20);
             $table->string('complemento')->nullable();
             $table->string('bairro');
             $table->string('cidade');
             $table->string('estado', 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
