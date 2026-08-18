@@ -1,16 +1,17 @@
 # Sobre o projeto
 
 Desafio técnico para a vaga de Desenvolvedor(a) Junior Full Stack na Hubsoft (empresa
-de ERP para provedores de internet). Objetivo: construir um CRUD completo de **usuários**
-(nome, e-mail, telefone e foto de perfil), com backend em API REST e frontend consumindo
-essa API — a integração entre os dois é o ponto mais avaliado no desafio.
+de ERP para provedores de internet). Objetivo: construir um CRUD completo de **endereços**
+(cep, logradouro, número, complemento, bairro, cidade, estado), com backend em API REST
+e frontend consumindo essa API — a integração entre os dois é o ponto mais avaliado no
+desafio.
 
-Não é o "usuário de autenticação" do Laravel — é a entidade de negócio do CRUD. Este
-projeto não tem login/autenticação.
+Cadastro solto/independente — endereço não pertence a nenhuma outra entidade (sem
+pessoa/cliente dono, sem chave estrangeira). Projeto não tem login/autenticação.
 
 # Stack
 
-- Backend: PHP 8.2+, Laravel 11, PostgreSQL
+- Backend: PHP 8.2+, Laravel 12, PostgreSQL
 - Frontend: React (Vite), Tailwind CSS, Axios
 - Testes: PHPUnit (feature tests da API)
 - Infra: Docker/docker-compose (Postgres + backend + frontend), opcional para rodar tudo de uma vez
@@ -20,15 +21,21 @@ projeto não tem login/autenticação.
 Usar **apenas** estas camadas — decisão consciente para não fazer overengineering
 num CRUD simples:
 
-- `app/Models/User.php` — entidade Eloquent (name, email, phone, photo_path)
-- `app/Http/Controllers/Api/UserController.php` — index (com busca/paginação), store,
+- `app/Models/Endereco.php` — entidade Eloquent (cep, logradouro, numero, complemento,
+  bairro, cidade, estado)
+- `app/Http/Controllers/Api/EnderecoController.php` — index (com busca/paginação), store,
   show, update, destroy
-- `app/Http/Requests/StoreUserRequest.php` e `UpdateUserRequest.php` — validação de entrada
+- `app/Http/Requests/StoreEnderecoRequest.php` e `UpdateEnderecoRequest.php` — validação
+  de entrada
 - `app/Http/Resources/ApiResource.php` e `ApiCollection.php` — base genérica do envelope
-  de resposta da API (ver seção abaixo); `UserResource` herda de `ApiResource`
-- `database/migrations/` — schema da tabela `users`
-- `routes/api.php` — `Route::apiResource('users', UserController::class)`
-- `tests/Feature/UserApiTest.php` — testes da API
+  de resposta da API (ver seção abaixo); `EnderecoResource` herda de `ApiResource`
+- `database/migrations/` — schema da tabela `enderecos`
+- `routes/api.php` — `Route::apiResource('enderecos', EnderecoController::class)`
+- `tests/Feature/EnderecoApiTest.php` — testes da API
+
+Colunas do banco e contrato JSON da API (request e response) usam os mesmos nomes em
+português (`cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `estado`) —
+sem camada de tradução entre DB e API.
 
 Sem Service, sem Repository — se a lógica de negócio crescer a ponto de justificar isso,
 discutimos antes de adicionar. Tratamento de exceções (abaixo) é a única camada "extra"
@@ -37,14 +44,15 @@ combinada, e mora em `bootstrap/app.php`, não numa camada nova.
 # Estrutura do frontend (`frontend/`)
 
 - `src/api/client.js` — instância única do axios (baseURL via variável de ambiente)
-- `src/api/users.js` — funções de acesso à API (listUsers, createUser, updateUser, deleteUser)
-- `src/components/UserTable.jsx` — tabela de usuários
-- `src/components/UserFormModal.jsx` — modal de criar/editar/visualizar (com upload de foto)
+- `src/api/enderecos.js` — funções de acesso à API (listEnderecos, createEndereco,
+  updateEndereco, deleteEndereco)
+- `src/components/EnderecoTable.jsx` — tabela de endereços
+- `src/components/EnderecoFormModal.jsx` — modal de criar/editar/visualizar
 - `src/components/ConfirmDialog.jsx` — confirmação antes de excluir
 - `src/App.jsx` — tela principal (busca, paginação, tabela, modais)
 
-Upload de foto em update usa `multipart/form-data` com `_method=PUT` (method spoofing),
-porque o Laravel não interpreta corpo multipart em PUT/PATCH nativos.
+Sem upload de arquivo neste CRUD (endereço não tem campo de foto/anexo) — todo o
+formulário é campos de texto simples.
 
 # Convenção de resposta da API
 

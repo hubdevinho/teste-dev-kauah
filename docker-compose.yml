@@ -1,8 +1,21 @@
 services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: testedev
+      POSTGRES_USER: kauah
+      POSTGRES_PASSWORD: segredo123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: ../docker/backend/Dockerfile
+    depends_on:
+      - postgres
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /app
     volumes:
@@ -20,3 +33,6 @@ services:
     ports:
       - "5173:5173"
     command: npm run dev -- --host
+
+volumes:
+  postgres_data:
