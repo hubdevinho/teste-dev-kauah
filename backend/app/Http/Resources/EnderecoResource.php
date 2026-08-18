@@ -3,9 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\ApiResource;
 
-class EnderecoResource extends JsonResource
+class EnderecoResource extends ApiResource
 {
     /**
      * Transform the resource into an array.
