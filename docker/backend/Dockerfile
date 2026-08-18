@@ -9,8 +9,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libonig-dev \
         unzip \
     && docker-php-ext-install pdo pdo_pgsql pdo_sqlite mbstring zip bcmath \
+    && pecl install xdebug \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
+COPY docker/backend/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 WORKDIR /app
