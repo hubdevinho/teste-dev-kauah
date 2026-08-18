@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Models\Endereco;
 use Illuminate\Http\Request;
+use App\Http\Resources\EnderecoResource;
 use Throwable;
 use Exception;
 
@@ -27,7 +29,7 @@ class EnderecoController extends Controller
                 ->orderBy('cidade')
                 ->paginate($request->integer('por_pagina', 15));
     
-            return response()->json($enderecos, 200);
+            return new ApiCollection($enderecos, EnderecoResource::class);
         } catch (Throwable $e) {
             throw new Exception('Falha ao buscar os endereços no sistema.', 500, $e);
         }
