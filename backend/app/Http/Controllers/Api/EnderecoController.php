@@ -17,23 +17,30 @@ class EnderecoController extends Controller
      */
     public function index(Request $request)
     {
+        if (empty($request->filled('busca'))) {
+            return response()->json([
+                'success' => true,
+                'message' => "Informe o parâmetro 'busca' para listar os endereços.",
+            ]);
+        }
+
         try {
+            $busca = $request->string('busca');
+
             $enderecos = Endereco::query()
-                ->when($request->filled('busca'), function ($query) use ($request) {
-                    $busca = $request->string('busca');
-                    $query->where('logradouro', 'like', "%{$busca}%")
-                        ->orWhere('bairro', 'like', "%{$busca}%")
-                        ->orWhere('cidade', 'like', "%{$busca}%")
-                        ->orWhere('cep', 'like', "%{$busca}%");
-                })
+                ->where('logradouro', 'like', "%{$busca}%")
+                ->orWhere('bairro', 'like', "%{$busca}%")
+                ->orWhere('cidade', 'like', "%{$busca}%")
+                ->orWhere('cep', 'like', "%{$busca}%")
                 ->orderBy('cidade')
                 ->paginate($request->integer('por_pagina', 15));
-    
+
             return new ApiCollection($enderecos, EnderecoResource::class);
         } catch (Throwable $e) {
             throw new Exception('Falha ao buscar os endereços no sistema.', 500, $e);
         }
     }
+
 
     /**
      * Show the form for creating a new resource.
