@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreEnderecoRequest;
 use App\Http\Resources\ApiCollection;
 use App\Models\Endereco;
 use Illuminate\Http\Request;
@@ -17,25 +18,26 @@ class EnderecoController extends Controller
      */
     public function index(Request $request)
     {
-        if (empty($request->filled('busca'))) {
-            return response()->json([
-                'success' => true,
-                'message' => "Informe o parâmetro 'busca' para listar os endereços.",
-            ]);
-        }
-
         try {
-            $busca = $request->string('busca');
+            $query = Endereco::query();
 
-            $enderecos = Endereco::query()
-                ->where('logradouro', 'like', "%{$busca}%")
-                ->orWhere('bairro', 'like', "%{$busca}%")
-                ->orWhere('cidade', 'like', "%{$busca}%")
-                ->orWhere('cep', 'like', "%{$busca}%")
+            if ($request->filled('busca')) {
+                $busca = $request->string('busca');
+                
+                $query->where(function ($q) use ($busca) {
+                    $q->where('logradouro', 'like', "%{$busca}%")
+                    ->orWhere('bairro', 'like', "%{$busca}%")
+                    ->orWhere('cidade', 'like', "%{$busca}%")
+                    ->orWhere('cep', 'like', "%{$busca}%");
+                });
+            }
+
+            $enderecos = $query
                 ->orderBy('cidade')
                 ->paginate($request->integer('por_pagina', 15));
 
             return new ApiCollection($enderecos, EnderecoResource::class);
+
         } catch (Throwable $e) {
             throw new Exception('Falha ao buscar os endereços no sistema.', 500, $e);
         }
@@ -53,9 +55,13 @@ class EnderecoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEnderecoRequest $request)
     {
-        //
+        $endereco = Endereco::create($request->validated());
+
+        return (new EnderecoResource($endereco))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
