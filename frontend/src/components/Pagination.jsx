@@ -1,11 +1,11 @@
-export default function Pagination({ meta, pagina, onMundarPagina }) {
+export default function Pagination({ meta, pagina, onMudarPagina }) {
     if (!meta || meta.last_page <= 1) return null
 
     return (
         <div className="mt-4 flex justify-center gap-2">
             <button 
                 disabled={pagina <= 1} 
-                onClick={() => onMundarPagina(pagina - 1)} 
+                onClick={() => onMudarPagina(pagina - 1)} 
                 className="rounded-md border border-gray-300 px-3 py-1 text-sm disabled:opacity-50"
             >
                 Anterior

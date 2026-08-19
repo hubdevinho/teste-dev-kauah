@@ -46,7 +46,7 @@ export default function EnderecoFormModal({ aberto, endereco, somenteLeitura, er
     if (!aberto) return null
 
     function handleChange(campo, valor) {
-        serDados((atual) => ({ ...atual, [campo]: valor }))
+        setDados((atual) => ({ ...atual, [campo]: valor }))
     }
 
     async function handleSubmit(event) {
