@@ -38,7 +38,7 @@ export function useEnderecos({ busca, pagina }) {
     }
 
     async function remover(endereco) {
-        setEnderecos((atual) => atual.filter(e) => e.id !== endereco.id)
+        setEnderecos((atual) => atual.filter((e) => e.id !== endereco.id))
 
         try {
             await deleteEndereco(endereco.id)
