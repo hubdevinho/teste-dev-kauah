@@ -2,7 +2,7 @@ import AcoesMenu from './AcoesMenu'
 
 export default function EnderecoTable({ enderecos, onVisualizar, onEditar, onExcluir }) {
   return (
-    <table className="w-full border-collapse overflow-hidden rounded-lg bg-white text-sm shadow">
+    <table className="w-full border-collapse rounded-lg bg-white text-sm shadow">
       <thead className="bg-blue-50 text-blue-900">
         <tr>
           <th className="px-4 py-3 text-center font-semibold">CEP</th>

@@ -17,8 +17,8 @@ no projeto.
 
 ```
 .
-├── backend/        # API Laravel
-├── frontend/        # SPA React
+├── backend/   # API Laravel
+├── frontend/  # SPA React
 ├── docker/backend/Dockerfile
 └── docker-compose.yml
 ```
@@ -28,31 +28,40 @@ no projeto.
 ### Pré-requisitos
 
 - Docker e Docker Compose
+- Portas livres: `5432` (Postgres), `8000` (backend), `5173` (frontend) — confira se não
+  há outro projeto usando essas portas antes de subir os containers
 
 ### Passo a passo
 
-```bash
-# 1. Clonar o repositório
-git clone git@github.com:hubdevinho/teste-dev-kauah.git
-cd teste-dev-kauah
+1. Clonar o repositório
+   ```bash
+   git clone git@github.com:hubdevinho/teste-dev-kauah.git
+   cd teste-dev-kauah
+   ```
 
-# 2. Variáveis de ambiente
-cp backend/.env.example backend/.env
-# frontend/.env já aponta pra API local por padrão:
-#   VITE_API_URL=http://localhost:8000/api
+2. Configurar as variáveis de ambiente
+   - Baixar o `.env` enviado pelo PrivNote e colocá-lo dentro da pasta **backend/**
+   - O `frontend/.env` já vem pronto, apontando para a API local — não precisa mexer
 
-# 3. Subir os containers (Postgres + backend + frontend)
-docker compose up -d --build
+3. Subir os containers (Postgres + backend + frontend)
+   ```bash
+   docker compose up -d --build
+   ```
 
-# 4. Gerar a chave da aplicação Laravel
-docker compose exec backend php artisan key:generate
+4. Gerar a chave da aplicação Laravel
+   ```bash
+   docker compose exec backend php artisan key:generate
+   ```
 
-# 5. Rodar as migrations
-docker compose exec backend php artisan migrate
+5. Rodar as migrations
+   ```bash
+   docker compose exec backend php artisan migrate
+   ```
 
-# 6. (opcional) popular o banco com endereços fake pra testar a listagem/paginação
-docker compose exec backend php artisan db:seed
-```
+6. (opcional) Popular o banco com endereços fake para testar a listagem/paginação
+   ```bash
+   docker compose exec backend php artisan db:seed
+   ```
 
 Depois disso:
 
@@ -112,9 +121,10 @@ docker compose exec backend php artisan test
 ## Decisões técnicas
 
 - **Sem autenticação/login** — fora do escopo do desafio; o CRUD é o foco.
-- **Sem Service/Repository** — Model, Controller, Form Request e API Resource cobrem bem
+- **Sem Service/Repository/Exceptions** — Model, Controller, Form Request e API Resource cobrem bem
   a complexidade de um CRUD simples; decisão consciente contra overengineering.
 - **Soft delete** em `Endereco` — excluir não apaga a linha do banco, só marca
   `deleted_at`; consultas normais já ignoram registros excluídos automaticamente.
 - **CORS** liberado via configuração padrão do Laravel (`allowed_origins => ['*']` em
   `api/*`), sem necessidade de publicar `config/cors.php`.
+  

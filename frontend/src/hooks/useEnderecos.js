@@ -42,7 +42,7 @@ export function useEnderecos({ busca, pagina }) {
 
         try {
             await deleteEndereco(endereco.id)
-        } catch {
+        } finally {
             await carregar()
         }
     }

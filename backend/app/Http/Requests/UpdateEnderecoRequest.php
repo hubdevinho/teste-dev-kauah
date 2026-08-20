@@ -23,13 +23,20 @@ class UpdateEnderecoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cep' => ['sometimes', 'required', 'string', 'max:9'],
+            'cep' => ['sometimes', 'required', 'string', 'max:9', 'regex:/^[0-9]+$/'],
             'logradouro' => ['sometimes', 'required', 'string', 'max:255'],
             'numero' => ['sometimes', 'string', 'max:20'],
             'complemento' => ['nullable', 'string', 'max:255'],
             'bairro' => ['sometimes', 'required', 'string', 'max:255'],
             'cidade' => ['sometimes', 'required', 'string', 'max:255'],
             'estado' => ['sometimes', 'required', 'string', 'size:2'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'cep.regex' => 'O campo CEP deve conter apenas números, sem hífens, pontos ou espaços.',
         ];
     }
 }

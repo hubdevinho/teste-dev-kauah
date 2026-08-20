@@ -9,8 +9,6 @@ use App\Http\Resources\ApiCollection;
 use App\Models\Endereco;
 use Illuminate\Http\Request;
 use App\Http\Resources\EnderecoResource;
-use Throwable;
-use Exception;
 
 class EnderecoController extends Controller
 {
@@ -19,29 +17,24 @@ class EnderecoController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            $query = Endereco::query();
+        $query = Endereco::query();
 
-            if ($request->filled('busca')) {
-                $busca = $request->string('busca');
-                
-                $query->where(function ($q) use ($busca) {
-                    $q->where('logradouro', 'like', "%{$busca}%")
-                    ->orWhere('bairro', 'like', "%{$busca}%")
-                    ->orWhere('cidade', 'like', "%{$busca}%")
-                    ->orWhere('cep', 'like', "%{$busca}%");
-                });
-            }
+        if ($request->filled('busca')) {
+            $busca = $request->string('busca');
 
-            $enderecos = $query
-                ->orderBy('cidade')
-                ->paginate($request->integer('por_pagina', 15));
-
-            return new ApiCollection($enderecos, EnderecoResource::class);
-
-        } catch (Throwable $e) {
-            throw new Exception('Falha ao buscar os endereços no sistema.', 500, $e);
+            $query->where(function ($q) use ($busca) {
+                $q->where('logradouro', 'like', "%{$busca}%")
+                ->orWhere('bairro', 'like', "%{$busca}%")
+                ->orWhere('cidade', 'like', "%{$busca}%")
+                ->orWhere('cep', 'like', "%{$busca}%");
+            });
         }
+
+        $enderecos = $query
+            ->orderBy('cidade')
+            ->paginate($request->integer('por_pagina', 15));
+
+        return new ApiCollection($enderecos, EnderecoResource::class);
     }
 
 

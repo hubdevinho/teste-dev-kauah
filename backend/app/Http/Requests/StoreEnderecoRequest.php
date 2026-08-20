@@ -26,7 +26,7 @@ class StoreEnderecoRequest extends FormRequest
         return [
             'cep' => ['required', 'string', 'max:9', 'regex:/^[0-9]+$/'],
             'logradouro' => ['required', 'string', 'max:255'],
-            'numero' => ['string', 'max:20'],
+            'numero' => ['required', 'string', 'max:20'],
             'complemento' => ['nullable', 'string', 'max:255'],
             'bairro' => ['required', 'string', 'max:255'],
             'cidade' => ['required', 'string', 'max:255'],
