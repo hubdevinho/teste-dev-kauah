@@ -43,22 +43,38 @@ no projeto.
    - Baixar o `.env` enviado pelo PrivNote e colocá-lo dentro da pasta **backend/**
    - O `frontend/.env` já vem pronto, apontando para a API local — não precisa mexer
 
-3. Subir os containers (Postgres + backend + frontend)
+3. Construir as imagens
    ```bash
-   docker compose up -d --build
+   docker compose build
    ```
 
-4. Gerar a chave da aplicação Laravel
+4. Instalar as dependências (Composer e npm)
+
+   `backend/vendor` e `frontend/node_modules` não vêm no repositório — precisam ser
+   instalados dentro dos containers antes da primeira subida. Use `run --rm` (não
+   `exec`): ele sobe um container avulso só pra rodar o comando, sem depender de o
+   serviço principal já estar de pé.
+   ```bash
+   docker compose run --rm backend composer install
+   docker compose run --rm frontend npm install
+   ```
+
+5. Subir os containers (Postgres + backend + frontend)
+   ```bash
+   docker compose up -d
+   ```
+
+6. Gerar a chave da aplicação Laravel
    ```bash
    docker compose exec backend php artisan key:generate
    ```
 
-5. Rodar as migrations
+7. Rodar as migrations
    ```bash
    docker compose exec backend php artisan migrate
    ```
 
-6. (opcional) Popular o banco com endereços fake para testar a listagem/paginação
+8. (opcional) Popular o banco com endereços fake para testar a listagem/paginação
    ```bash
    docker compose exec backend php artisan db:seed
    ```
@@ -127,4 +143,4 @@ docker compose exec backend php artisan test
   `deleted_at`; consultas normais já ignoram registros excluídos automaticamente.
 - **CORS** liberado via configuração padrão do Laravel (`allowed_origins => ['*']` em
   `api/*`), sem necessidade de publicar `config/cors.php`.
-  
+
