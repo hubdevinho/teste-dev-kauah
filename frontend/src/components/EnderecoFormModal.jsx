@@ -20,13 +20,18 @@ const CAMPOS    = [
     { nome: 'estado', label: 'UF' },
 ]
 
+function formatarCep(valor) {
+    const digitos = valor.replace(/\D/g, '').slice(0, 8)
+    return digitos.length > 5 ? `${digitos.slice(0, 5)}-${digitos.slice(5)}` : digitos
+}
+
 export default function EnderecoFormModal({ aberto, endereco, somenteLeitura, erros, onSalvar, onFechar }) {
     const [dados, setDados] = useState(ENDERECO_VAZIO)
     const [salvando, setSalvando] = useState(false)
     const primeiroCampoRef = useRef(null)
 
     useEffect(() => {
-        setDados(endereco ?? ENDERECO_VAZIO)
+        setDados(endereco ? { ...endereco, cep: formatarCep(endereco.cep ?? '') } : ENDERECO_VAZIO)
         setSalvando(false)
     }, [endereco, aberto])
 
@@ -46,13 +51,14 @@ export default function EnderecoFormModal({ aberto, endereco, somenteLeitura, er
     if (!aberto) return null
 
     function handleChange(campo, valor) {
-        setDados((atual) => ({ ...atual, [campo]: valor }))
+        const valorFormatado = campo === 'cep' ? formatarCep(valor) : valor
+        setDados((atual) => ({ ...atual, [campo]: valorFormatado }))
     }
 
     async function handleSubmit(event) {
         event.preventDefault()
         setSalvando(true)
-        await onSalvar(dados)
+        await onSalvar({ ...dados, cep: dados.cep.replace(/\D/g, '') })
         setSalvando(false)
     }
 
@@ -73,6 +79,8 @@ export default function EnderecoFormModal({ aberto, endereco, somenteLeitura, er
                     value={dados[nome] ?? ''}
                     disabled={somenteLeitura || salvando}
                     onChange={(e) => handleChange(nome, e.target.value)}
+                    maxLength={nome === 'cep' ? 9 : undefined}
+                    placeholder={nome === 'cep' ? '00000-000' : undefined}
                     className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"
                 />
                 {erros?.[nome] && <p className="mt-1 text-xs text-red-600">{erros[nome][0]}</p>}
